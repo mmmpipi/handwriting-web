@@ -5,9 +5,10 @@ FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 # Install system dependencies
-# Added 'pandoc' here to fix the "FileNotFoundError: [Errno 2] No such file or directory: 'ar'" error
+# libgl1-mesa-glx and libglib2.0-0 are required for opencv-python
+# pandoc is required for pypandoc (document conversion)
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     pandoc \
     && apt-get clean && \
@@ -17,10 +18,9 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt /app/requirements.txt
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install gunicorn (if it's not in your requirements.txt)
-RUN pip install gunicorn
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir gunicorn
 
 # Copy the backend source code into the container at /app
 # Do this last so code changes don't invalidate the pip install cache

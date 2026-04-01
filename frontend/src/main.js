@@ -75,12 +75,8 @@ Sentry.init({
   app,
   dsn: "https://507b601bbd374cf58b7c5468cb434578@o4505255803551744.ingest.sentry.io/4505485557891072",
   integrations: [
-    new Sentry.BrowserTracing({
-      // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-    }),
-    new Sentry.Replay(),
+    Sentry.browserTracingIntegration({ router }),
+    Sentry.replayIntegration(),
   ],
   // Performance Monitoring
   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!

@@ -1037,18 +1037,29 @@ def after_request(response):
         return response
 
 
+frontend_dist = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../frontend/dist"))
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_spa(path):
+    if path.startswith("api/"):
+        return jsonify({"error": "API endpoint not found"}), 404
+    if path == "":
+        return send_file(os.path.join(frontend_dist, "index.html"))
+    file_path = os.path.normpath(os.path.join(frontend_dist, path))
+    if os.path.isfile(file_path):
+        return send_file(file_path)
+    return send_file(os.path.join(frontend_dist, "index.html"))
+
+
 if __name__ == "__main__":
-    # 启动时清理之前标记的目录
     cleanup_marked_directories()
     app.run(debug=True, host="0.0.0.0", port=5005)
 
 
-# poetry
 def main():
     app.run(debug=True, host="0.0.0.0", port=5005)
-
-    # good luck 6/16/2023
-    # thank you 2/14/2025
 
 
 """    
